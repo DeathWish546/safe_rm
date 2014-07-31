@@ -72,17 +72,22 @@ function removeRecursively() {
 
                 if [ $thisDir ]; then
                         if ! [ $thisDirNotEmpty ]; then
-                                optionI $2 $i
-                                removeAndUpdate $i $file_link
-                                optionV $3 $test $i
+                                optionI $2 $thisDir
+                                removeAndUpdate $thisDir $file_link
+                                optionV $3 $test $thisDir
+
+                                sed -e '$d' curdir > tempcurdir
+                                cat tempcurdir > curdir
+                                rm tempcurdir
+                                continue
                         fi
                 fi
 
                 if [[ "$test" == "directory" && $2 -eq 0 ]]; then
-                        read -f "safe_rm: descend into directory '$i'?" input
+                        read -p "safe_rm: descend into directory '$i'?" input
                         if [[ "input" =~ ^[yY] ]]; then
                                 head -1 tempfile >> curdir
-                                sed -e '1d' tempfile > temptempa
+                                sed -e '1d' tempfile > temptemp
                                 cat temptemp > tempfile
                                 rm temptemp
                         else
@@ -90,11 +95,20 @@ function removeRecursively() {
                                 cat temptemp > tempfile
                                 rm temptemp
                         fi
+                        optionI $2 $i
+                        removeAndUpdate $i $file_link
+                        optionV $3 $test $i
                         continue
                 fi
-                optionI $2 $i
-                removeAndUpdate $i $file_link
-                optionV $3 $test $i
+
+#               optionI $2 $i
+#               removeAndUpdate $i $file_link
+#               optionV $3 $test $i
+
+#               sed -e '1d' tempfile> temptemp
+#               cat temptemp > tempfile
+#              rm temptemp
+
         done
         rm tempfile
         rm curdir
